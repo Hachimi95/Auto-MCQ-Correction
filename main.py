@@ -1,41 +1,37 @@
 import cv2
 import numpy as np
 import func
-###########
+
 path = "qcm10.jpeg"
 widthImg=700
 heightImg=700
 ans = [ 1,2,0,1,4]
 webcamFeed = False
-###########
+
 cap = cv2.VideoCapture(0)
 cap.set(10,150)
 while True :
     if webcamFeed : success ,img= cap.read()
     else:  img = cv2.imread(path)
-    # resize our image
+
     img=cv2.resize(img,(widthImg,heightImg))
     imgContours = img.copy()
     imgBiggestContours = img.copy()
     imgfinal=img.copy()
-    # convert our image to Grayscale
+
     imgGray= cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
-    # add blur to our Grayscale image
+
     imgBlur = cv2.GaussianBlur(imgGray,(5,5),1)
-    #   detect our edges
+
     imgCanny = cv2.Canny(imgBlur,10,50)
 
-    # find the image contours
-    # use the external method it will help us to find the outer edges
-    # the 3 argument to say we dont need any approximation
+
     try :
         contours,hierarchy = cv2.findContours(imgCanny,cv2.RETR_EXTERNAL,cv2.CHAIN_APPROX_NONE)
-        # to draw our contours
+
         cv2.drawContours(imgContours,contours,-1,(0,250,0),10)
-        # find rectangles
         rectCon = func.rectContours(contours)
         biggestContours = func.getCornerContours(rectCon[0])
-        # reorder
         func.reorder(biggestContours)
         secondBigContours = func.getCornerContours(rectCon[1])
 
@@ -77,7 +73,7 @@ while True :
            for x in range(0,5) :
                 arry= mypixelval[x]
                 myIndexVal = np.where(arry == np.amax(arry))
-                #print(myIndex[0])
+
                 myIndex.append(myIndexVal[0][0])
 
            grading=[]
@@ -85,9 +81,9 @@ while True :
                if ans[x]== myIndex[x] :
                    grading.append(1)
                else: grading.append(0)
-           #print(grading)
-           score = (sum(grading)/5) *100 # final grade
-           # display answer
+
+           score = (sum(grading)/5) *100
+
            imgAnsr=imgwarp.copy()
            imgAnsr=func.showAnswers(imgAnsr, myIndex, grading, ans)
 
@@ -97,7 +93,7 @@ while True :
 
            invmatrix = cv2.getPerspectiveTransform(p2, p1)
            imginvwarp = cv2.warpPerspective(imgRawDrawing, invmatrix, (widthImg, heightImg))
-           # display  test grade on original image
+
            imgRawGrade = np.zeros_like(imgwarpg)
            cv2.putText(imgRawGrade,str(int(score))+"%",(60,100),cv2.FONT_HERSHEY_COMPLEX,3,(0,250,250),3)
 
