@@ -33,13 +33,11 @@ def stackImages(imgArray,scale):
 
 def rectContours(contours) :
     rectCon = []
-    # we have to filter out all contours to check if they have four corner points
     for i in contours :
         area= cv2.contourArea(i)
         if area>50 :
-           peri = cv2.arcLength(i,True)           # find the total lengh of this contours
-           approx= cv2.approxPolyDP(i,0.02*peri,True) # approximate the contours to find who has 4 corners
-           # print("corner points" , len(approx))
+           peri = cv2.arcLength(i,True)
+           approx= cv2.approxPolyDP(i,0.02*peri,True)
            if len(approx)==4 :
                rectCon.append(i)
     rectCon= sorted(rectCon,key=cv2.contourArea,reverse=True)
@@ -55,13 +53,11 @@ def getCornerContours(cont) :
 def reorder(points) :
     points = points.reshape((4,2))
     newPoints = np.zeros((4,1,2), np.int32)
-    #print(points)
     add= points.sum(1)
     newPoints[0] = points [np.argmin(add)]
     newPoints[3] = points[np.argmax(add)]
     newPoints[1] = points [3]
     newPoints[2] = points[1]
-
     return newPoints
 
 def spliBoxes(img) :
@@ -70,10 +66,7 @@ def spliBoxes(img) :
     for r in rows :
         colms= np.hsplit(r,5)
         for box in colms :
-            #cv2.imshow("sd", box)
             boxes.append(box)
-
-
     return  boxes
 
 def showAnswers(img,myIndex,grading,ans) :
@@ -81,7 +74,7 @@ def showAnswers(img,myIndex,grading,ans) :
     secH = int(img.shape[0]/5)
     for x in range(0,5) :
         myAns = myIndex[x]
-        cX=(myAns*secW)+secW//2 # to know the centre of box area
+        cX=(myAns*secW)+secW//2
         cY=(x*secH)+secH//2
         if grading[x]==1:
             mycolor=(0,255,0)
